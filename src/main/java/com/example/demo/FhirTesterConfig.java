@@ -1,10 +1,16 @@
 package com.example.demo;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
+import ca.uhn.fhir.rest.server.util.ITestingUiClientFactory;
 import ca.uhn.fhir.to.FhirTesterMvcConfig;
 import ca.uhn.fhir.to.TesterConfig;
 
@@ -34,6 +40,9 @@ public class FhirTesterConfig {
     * deploying your server to a place with a fully qualified domain name, 
     * you might want to use that instead of using the variable.
     */
+
+   private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(FhirTesterConfig.class);
+
    @Bean
    public TesterConfig testerConfig() {
       TesterConfig retVal = new TesterConfig();
@@ -43,12 +52,24 @@ public class FhirTesterConfig {
             .withFhirVersion(FhirVersionEnum.R4)
             .withBaseUrl("http://localhost:8000/fhir")
             .withName("Local Tester");
-      
-      /*
-       * Use the method below to supply a client "factory" which can be used 
-       * if your server requires authentication
-       */
-      // retVal.setClientFactory(clientFactory);
+ 
+      ITestingUiClientFactory clientFactory = new ITestingUiClientFactory() {
+
+         @Override
+         public IGenericClient newClient(FhirContext theFhirContext, HttpServletRequest theRequest,
+               String theServerBaseUrl) {
+            // Create a client
+            IGenericClient client = theFhirContext.newRestfulGenericClient(theServerBaseUrl);
+            ourLog.info("Making custom client");
+            // Register an interceptor which adds credentials
+            client.registerInterceptor(
+                  new BearerTokenAuthInterceptor("foobar"));
+
+            return client;
+         }
+
+      };
+      retVal.setClientFactory(clientFactory);
       
       return retVal;
    }
