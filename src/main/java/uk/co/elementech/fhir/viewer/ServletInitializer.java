@@ -1,4 +1,4 @@
-package com.example.demo;
+package uk.co.elementech.fhir.viewer;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;

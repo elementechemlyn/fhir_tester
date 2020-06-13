@@ -1,22 +1,16 @@
-package com.example.demo;
+package uk.co.elementech.fhir.viewer;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.OAuth2AuthorizationContext;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.OAuth2ClientContext;
-import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
@@ -75,10 +69,9 @@ public class FhirTesterConfig {
                oauthToken.getName());
    
             String accessToken = oauthClient.getAccessToken().getTokenValue();
-            ourLog.info("got token:" + accessToken);
+            ourLog.debug("got token:" + accessToken);
             // Create a client
             IGenericClient client = theFhirContext.newRestfulGenericClient(theServerBaseUrl);
-            ourLog.info("Making custom client.");
             
             // Register an interceptor which adds credentials
             client.registerInterceptor(
