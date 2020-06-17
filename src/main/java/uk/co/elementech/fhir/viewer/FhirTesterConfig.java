@@ -1,19 +1,15 @@
 package uk.co.elementech.fhir.viewer;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 import ca.uhn.fhir.rest.server.util.ITestingUiClientFactory;
@@ -45,31 +41,31 @@ public class FhirTesterConfig {
     */
 
    private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(FhirTesterConfig.class);
+
    @Autowired
-   OAuth2AuthorizedClientService service;
-   
+   private TokenFinder tokenFinder;
+
+   @Autowired
+   private ViewerProperties viewerProperties;
+
    @Bean
    public TesterConfig testerConfig() {
       TesterConfig retVal = new TesterConfig();
-      retVal
-         .addServer()
-            .withId("home")
-            .withFhirVersion(FhirVersionEnum.R4)
-            .withBaseUrl("http://localhost:8000/fhir")
-            .withName("Local Tester");
- 
+      for (Map.Entry<String, ServerConfig> entry : viewerProperties.getServer().entrySet()) {
+         retVal
+            .addServer()
+               .withId(entry.getValue().getId())
+               .withFhirVersion(entry.getValue().getFhirVersion())
+               .withBaseUrl(entry.getValue().getBaseUrl())
+               .withName(entry.getValue().getName());
+      }
+    
       ITestingUiClientFactory clientFactory = new ITestingUiClientFactory() {
       
          @Override
          public IGenericClient newClient(FhirContext theFhirContext, HttpServletRequest theRequest, String theServerBaseUrl) {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
-            OAuth2AuthorizedClient oauthClient = service.loadAuthorizedClient(
-               oauthToken.getAuthorizedClientRegistrationId(),
-               oauthToken.getName());
-   
-            String accessToken = oauthClient.getAccessToken().getTokenValue();
-            ourLog.debug("got token:" + accessToken);
+            String accessToken = tokenFinder.findToken(theServerBaseUrl);
+            ourLog.debug("Got token:" + accessToken);
             // Create a client
             IGenericClient client = theFhirContext.newRestfulGenericClient(theServerBaseUrl);
             
@@ -84,6 +80,5 @@ public class FhirTesterConfig {
       retVal.setClientFactory(clientFactory);
       
       return retVal;
-   }
-   
+   }  
 }
