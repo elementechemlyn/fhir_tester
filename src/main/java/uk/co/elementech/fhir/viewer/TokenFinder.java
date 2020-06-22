@@ -21,22 +21,23 @@ class TokenFinder {
 
         ourLog.debug("Finding a token for :" + baseUrl);
         ServerConfig serverConfig = viewerProperties.getServerByUrl().get(baseUrl);
+        ourLog.debug("Getting home token");
+        //We're on the home server. Use the same token as the app
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
+        
+        OAuth2AuthorizedClient oauthClient = service.loadAuthorizedClient(
+           oauthToken.getAuthorizedClientRegistrationId(),
+           oauthToken.getName());
+
+        String homeToken = oauthClient.getAccessToken().getTokenValue();
 
         if(serverConfig.getHome()){
-            ourLog.debug("Getting home token");
-            //We're on the home server. Use the same token as the app
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
-            
-            OAuth2AuthorizedClient oauthClient = service.loadAuthorizedClient(
-               oauthToken.getAuthorizedClientRegistrationId(),
-               oauthToken.getName());
-    
-            String accessToken = oauthClient.getAccessToken().getTokenValue();
-            return accessToken;
+            ourLog.info("Returning home token");
+            return homeToken;
         } else {
-            ourLog.debug("Exchange home token for remote token");
-            return "";
+            ourLog.info("Exchange home token for remote token");
+            return TokenExchange.exchangeToken(serverConfig,homeToken);
         }
     }
 }

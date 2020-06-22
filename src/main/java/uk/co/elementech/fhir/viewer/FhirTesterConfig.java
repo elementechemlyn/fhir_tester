@@ -65,7 +65,8 @@ public class FhirTesterConfig {
          @Override
          public IGenericClient newClient(FhirContext theFhirContext, HttpServletRequest theRequest, String theServerBaseUrl) {
             String accessToken = tokenFinder.findToken(theServerBaseUrl);
-            ourLog.debug("Got token:" + accessToken);
+            ourLog.info("Got token:" + accessToken);
+            theRequest.getSession().setAttribute("activeToken", accessToken);
             // Create a client
             IGenericClient client = theFhirContext.newRestfulGenericClient(theServerBaseUrl);
             

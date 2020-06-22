@@ -8,9 +8,10 @@ public class ServerConfig {
     private String name;
     private String baseUrl;
     private FhirVersionEnum fhirVersion;
-    private String authUrl;
+    private String tokenUrl;
     private String clientId;
     private String clientSecret;
+    private String subjectIssuer;
 
     public Boolean getHome(){
         return this.home;
@@ -27,14 +28,17 @@ public class ServerConfig {
     public FhirVersionEnum getFhirVersion(){
         return this.fhirVersion;
     }
-    public String getAuthUrl(){
-        return this.authUrl;
+    public String getTokenUrl(){
+        return this.tokenUrl;
     }
     public String getClientId(){
         return this.clientId;
     }
     public String getClientSecret(){
         return this.clientSecret;
+    }
+    public String getSubjectIssuer(){
+        return this.subjectIssuer;
     }
     public void setHome(Boolean home){
         this.home = home;
@@ -51,13 +55,16 @@ public class ServerConfig {
     public void setFhirVersion(FhirVersionEnum fhirVersion){
         this.fhirVersion = fhirVersion;
     }
-    public void setAuthUrl(String authUrl){
-        this.authUrl = authUrl;
+    public void setTokenUrl(String authUrl){
+        this.tokenUrl = authUrl;
     }
     public void setClientId(String clientId){
         this.clientId = clientId;
     }
     public void setClientSecret(String clientSecret){
         this.clientSecret = clientSecret;
+    }
+    public void setSubjectIssuer(String subjectIssuer){
+        this.subjectIssuer = subjectIssuer;
     }
 }
