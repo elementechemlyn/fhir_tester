@@ -9,8 +9,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationProperties(prefix = "foo.bar")
+@ConfigurationProperties(prefix = "viewer")
 public class ViewerProperties {
+
+    private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(FhirTesterConfig.class);
 
     private Map<String, ServerConfig> server = new HashMap<>();
     private Map<String, ServerConfig> serverByUrl = new HashMap<>();
