@@ -24,7 +24,7 @@ public class ViewerController extends BaseController {
         addCommonParams(theServletRequest, theRequest, theModel);
         ourLog.info("Doing token endppint");
 		theModel.put("notHome", true);
-        theModel.put("extraBreadcrumb", "About");
+        theModel.put("extraBreadcrumb", "Token");
 
         activeToken = (String)theServletRequest.getSession().getAttribute("activeToken");
 		try {

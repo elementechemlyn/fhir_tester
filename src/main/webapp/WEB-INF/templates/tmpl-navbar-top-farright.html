@@ -1,5 +1,5 @@
 <ul th:fragment="farright">
 	<li><a href="https://github.com/elementechemlyn/fhir_tester"><i class="fab fa-github topbarIcon"></i></span>&nbsp;Source Code</a></li>
-	<li><a href="token"><span class="fa fa-question-circle topbarIcon"></span>&nbsp;Show Token</a></li>
+	<li><a th:href="@{'/token?serverId=' + ${serverId}}"><span class="fa fa-question-circle topbarIcon"></span>&nbsp;Show Token</a></li>
 	<li><a href="about"><span class="fa fa-question-circle topbarIcon"></span>&nbsp;About This Server</a></li>
 </ul>
